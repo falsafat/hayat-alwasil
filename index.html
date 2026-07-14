@@ -175,6 +175,14 @@
       gap: 12px;
     }
     .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    #generateOnlyBtn, #actionBar { scroll-margin-top: 100px; }
+
+    @media (max-width: 640px) {
+      .control-grid { grid-template-columns: 1fr; gap: 10px; }
+      .toggle-row { align-items: flex-start; flex-direction: column; gap: 8px; }
+      .amount-input { width: 100%; }
+      .control-inner { padding: 16px; }
+    }
     .toggle-wrapper { position: relative; display: inline-block; flex-shrink: 0; }
     .toggle-wrapper input { opacity: 0; width: 0; height: 0; position: absolute; }
     .toggle-track {
@@ -575,10 +583,32 @@
     const SALAD_CYCLE = ['العساف', 'محمد', 'إبراهيم', 'العجمي', 'سعد', 'عبدالعزيز'];
     const ALL_PEOPLE = ['العساف', 'محمد', 'إبراهيم', 'العجمي', 'سعد', 'عبدالعزيز'];
     const SWEET_PARTNERS = { 'محمد': 'إبراهيم', 'عبدالعزيز': 'العجمي', 'سعد': 'العساف' };
-    const LOGO_URL = document.getElementById('logoImg').src;
+    const STORAGE_KEY = 'hayat-alwasil-config-v1';
+    const FALLBACK_LOGO_URL = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" width="280" height="120" viewBox="0 0 280 120">
+        <rect width="280" height="120" rx="24" fill="#F9F6F0"/>
+        <circle cx="70" cy="60" r="28" fill="#4A5D23"/>
+        <path d="M70 34c14 0 26 11 26 25 0 14-12 25-26 25s-26-11-26-25c0-14 12-25 26-25z" fill="#FFF8E7"/>
+        <path d="M54 60h32" stroke="#4A5D23" stroke-width="4" stroke-linecap="round"/>
+        <text x="116" y="56" font-family="Tajawal, Arial, sans-serif" font-size="24" font-weight="700" fill="#4A5D23">حياة الوصل</text>
+        <text x="116" y="84" font-family="Tajawal, Arial, sans-serif" font-size="12" fill="#8B8680">جدول الاجتماعات والمهام</text>
+      </svg>
+    `);
 
     let meetings = [];
     let subAmount = 150;
+    let subscriptionEnabled = true;
+
+    const logoImg = document.getElementById('logoImg');
+    logoImg.addEventListener('error', () => {
+      if (logoImg.dataset.fallbackApplied === 'true') return;
+      logoImg.dataset.fallbackApplied = 'true';
+      logoImg.src = FALLBACK_LOGO_URL;
+    });
+
+    function getCurrentLogoUrl() {
+      return logoImg && logoImg.src ? logoImg.src : FALLBACK_LOGO_URL;
+    }
 
     /* ============================================================
        أدوات التاريخ الهجري
@@ -922,7 +952,7 @@
         // بناء محتوى التصدير
         let html = `
           <div class="export-zone-header">
-            <img src="${LOGO_URL}" crossorigin="anonymous" alt="شعار">
+            <img src="${getCurrentLogoUrl()}" alt="شعار" style="max-width:100%;height:auto;">
             <div class="export-zone-title">جدول اجتماعات حياة الوصل</div>
             <div class="export-zone-sub">الجدول الدوري للمهام</div>
             <div class="export-zone-line"></div>
@@ -1017,17 +1047,66 @@
       document.getElementById('settingsBtn').classList.toggle('open');
     }
 
+    function saveConfig() {
+      const payload = {
+        startDate: document.getElementById('startDate').value,
+        numMeetings: document.getElementById('numMeetings').value,
+        firstHost: document.getElementById('firstHost').value,
+        firstSalad: document.getElementById('firstSalad').value,
+        subscriptionEnabled,
+        subAmount
+      };
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) {
+        console.warn('Unable to save config', e);
+      }
+    }
+
+    function loadConfig() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+
+        const payload = JSON.parse(raw);
+        if (payload.startDate) document.getElementById('startDate').value = payload.startDate;
+        if (payload.numMeetings) document.getElementById('numMeetings').value = payload.numMeetings;
+        if (payload.firstHost) document.getElementById('firstHost').value = payload.firstHost;
+        if (payload.firstSalad) document.getElementById('firstSalad').value = payload.firstSalad;
+
+        if (typeof payload.subscriptionEnabled === 'boolean') {
+          subscriptionEnabled = payload.subscriptionEnabled;
+          document.getElementById('subscriptionToggle').checked = payload.subscriptionEnabled;
+        }
+
+        if (Number.isFinite(payload.subAmount)) {
+          subAmount = Math.max(0, parseInt(payload.subAmount, 10) || 0);
+          document.getElementById('subAmount').value = subAmount;
+        }
+
+        updateSubAmount(subAmount);
+        toggleSubscription(subscriptionEnabled);
+        return true;
+      } catch (e) {
+        console.warn('Unable to load config', e);
+        return false;
+      }
+    }
+
     function toggleSubscription(show) {
+      subscriptionEnabled = Boolean(show);
       const footer = document.getElementById('appFooter');
       const amountRow = document.getElementById('amountRow');
-      footer.classList.toggle('visible', show);
-      amountRow.style.opacity = show ? '1' : '0.4';
-      amountRow.style.pointerEvents = show ? 'auto' : 'none';
+      footer.classList.toggle('visible', subscriptionEnabled);
+      amountRow.style.opacity = subscriptionEnabled ? '1' : '0.4';
+      amountRow.style.pointerEvents = subscriptionEnabled ? 'auto' : 'none';
+      saveConfig();
     }
 
     function updateSubAmount(val) {
-      subAmount = Math.max(0, parseInt(val) || 0);
+      subAmount = Math.max(0, parseInt(val, 10) || 0);
       document.getElementById('footerText').textContent = `تجديد الاشتراك ${subAmount} ريال`;
+      saveConfig();
     }
 
     function showToast(message) {
@@ -1053,8 +1132,9 @@
       renderMeetings();
 
       if (meetings.length > 0) {
+        saveConfig();
         setTimeout(() => {
-          document.getElementById('meetingsContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+          document.getElementById('actionBar').scrollIntoView({ behavior: 'smooth', block: 'start' });
         }, 200);
         showToast(`تم توليد ${meetings.length} اجتماع بنجاح`);
       }
@@ -1074,6 +1154,20 @@
       const m = String(next.getMonth() + 1).padStart(2, '0');
       const d = String(next.getDate()).padStart(2, '0');
       document.getElementById('startDate').value = `${y}-${m}-${d}`;
+
+      document.getElementById('startDate').addEventListener('change', saveConfig);
+      document.getElementById('numMeetings').addEventListener('change', saveConfig);
+      document.getElementById('firstHost').addEventListener('change', saveConfig);
+      document.getElementById('firstSalad').addEventListener('change', saveConfig);
+      document.getElementById('subscriptionToggle').addEventListener('change', (event) => toggleSubscription(event.target.checked));
+      document.getElementById('subAmount').addEventListener('change', () => updateSubAmount(document.getElementById('subAmount').value));
+
+      const hasStoredConfig = loadConfig();
+      if (!hasStoredConfig) {
+        updateSubAmount(subAmount);
+        toggleSubscription(subscriptionEnabled);
+        saveConfig();
+      }
 
       // فحص دعم التاريخ الهجري
       try {
