@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>حياة الوصل - جدول الاجتماعات والمهام</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { tajawal: ['Tajawal', 'sans-serif'] },
+          colors: {
+            ivory: '#F9F6F0',
+            olive: { DEFAULT: '#4A5D23', light: '#6B8A3D', pale: '#E8F0D8' },
+            cream: '#FFF8E7',
+            warm: '#F5F2ED'
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --bg: #F9F6F0;
+      --fg: #2C2C2C;
+      --muted: #8B8680;
+      --accent: #4A5D23;
+      --accent-light: #6B8A3D;
+      --accent-pale: #E8F0D8;
+      --card: #FFFFFF;
+      --border: rgba(74,93,35,0.08);
+      --shadow: 0 2px 20px rgba(74,93,35,0.06);
+      --shadow-hover: 0 6px 32px rgba(74,93,35,0.13);
+      --sweet-bg: #FFF8E7;
+      --sweet-border: #D4A843;
+      --salad-bg: #EDF5E1;
+      --salad-border: #4A5D23;
+      --salty-bg: #F5F2ED;
+      --salty-border: #A89B8C;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: var(--bg);
+      color: var(--fg);
+      min-height: 100vh;
+      padding-bottom: 70px;
+      background-image: radial-gradient(ellipse at 50% 0%, rgba(74,93,35,0.04) 0%, transparent 60%);
+    }
+
+    /* ===== الشعار والترويسة ===== */
+    .app-header {
+      text-align: center;
+      padding: 32px 16px 8px;
+      position: relative;
+    }
+    .logo-wrapper {
+      display: inline-block;
+      position: relative;
+      margin-bottom: 8px;
+    }
+    .logo-wrapper::before {
+      content: '';
+      position: absolute;
+      inset: -12px;
+      background: radial-gradient(ellipse, rgba(74,93,35,0.06) 0%, transparent 70%);
+      border-radius: 50%;
+      z-index: 0;
+    }
+    .logo-wrapper img {
+      position: relative;
+      z-index: 1;
+      height: 100px;
+      width: auto;
+      max-width: 280px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 12px rgba(74,93,35,0.12));
+      animation: logoReveal 1s cubic-bezier(.4,0,.2,1);
+    }
+    .app-title {
+      font-size: 20px;
+      font-weight: 900;
+      color: var(--accent);
+      margin-top: 4px;
+      letter-spacing: -0.3px;
+    }
+    .app-subtitle {
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 400;
+      margin-top: 1px;
+    }
+    .header-line {
+      width: 50px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      border-radius: 2px;
+      margin: 12px auto 0;
+    }
+
+    /* ===== زر الإعدادات ===== */
+    .settings-toggle {
+      position: fixed;
+      top: 14px;
+      left: 14px;
+      z-index: 100;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 3px 14px rgba(74,93,35,0.25);
+      transition: transform 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.3s;
+    }
+    .settings-toggle:hover { box-shadow: 0 4px 20px rgba(74,93,35,0.35); }
+    .settings-toggle.open { transform: rotate(90deg); }
+
+    /* ===== لوحة التحكم ===== */
+    .control-panel {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.5s cubic-bezier(.4,0,.2,1), opacity 0.3s, padding 0.4s;
+      opacity: 0;
+      padding: 0 16px;
+    }
+    .control-panel.open { max-height: 600px; opacity: 1; padding: 0 16px 16px; }
+    .control-inner {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .control-row { margin-bottom: 14px; }
+    .control-row:last-child { margin-bottom: 0; }
+    .control-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+    .control-input, .control-select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: 'Tajawal', sans-serif;
+      font-size: 14px;
+      color: var(--fg);
+      background: var(--bg);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+    }
+    .control-input:focus, .control-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(74,93,35,0.10);
+    }
+    .control-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .toggle-wrapper { position: relative; display: inline-block; flex-shrink: 0; }
+    .toggle-wrapper input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      display: block; width: 46px; height: 26px; background: #ccc;
+      border-radius: 13px; cursor: pointer; transition: background 0.3s; position: relative;
+    }
+    .toggle-track::after {
+      content: ''; position: absolute; width: 22px; height: 22px; background: white;
+      border-radius: 50%; top: 2px; right: 2px;
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+    .toggle-wrapper input:checked + .toggle-track { background: var(--accent); }
+    .toggle-wrapper input:checked + .toggle-track::after { transform: translateX(-20px); }
+    .amount-input {
+      width: 90px; padding: 6px 10px; border: 1.5px solid var(--border);
+      border-radius: 8px; font-family: 'Tajawal', sans-serif; font-size: 14px;
+      font-weight: 700; color: var(--fg); background: var(--bg); text-align: center; outline: none;
+    }
+    .amount-input:focus { border-color: var(--accent); }
+    .divider { height: 1px; background: var(--border); margin: 14px 0 12px; }
+
+    /* ===== أزرار التوليد والتصدير ===== */
+    .action-bar {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      padding: 0 16px;
+      margin-bottom: 16px;
+    }
+    .action-bar.visible { display: flex; }
+    .btn-primary {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 14px 20px; background: var(--accent); color: white;
+      border: none; border-radius: var(--radius-sm); font-family: 'Tajawal', sans-serif;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(74,93,35,0.25);
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+    }
+    .btn-primary:hover { background: var(--accent-light); box-shadow: 0 6px 24px rgba(74,93,35,0.30); }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-secondary {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 11px 20px; background: transparent; color: var(--accent);
+      border: 2px solid var(--accent); border-radius: var(--radius-sm);
+      font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover { background: var(--accent); color: white; }
+    .btn-secondary:active { transform: scale(0.97); }
+    .btn-generate-only {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: calc(100% - 32px); margin: 0 16px 12px; padding: 14px 20px;
+      background: var(--accent); color: white; border: none;
+      border-radius: var(--radius-sm); font-family: 'Tajawal', sans-serif;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 16px rgba(74,93,35,0.25);
+      transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+    }
+    .btn-generate-only:hover { background: var(--accent-light); }
+    .btn-generate-only:active { transform: scale(0.97); }
+
+    /* ===== الحالة الفارغة ===== */
+    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+    .empty-icon { font-size: 56px; margin-bottom: 16px; opacity: 0.35; }
+    .empty-text { font-size: 16px; font-weight: 500; line-height: 1.8; }
+
+    /* ===== بطاقات الاجتماعات ===== */
+    .meetings-container {
+      padding: 0 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .meeting-card {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      overflow: hidden; opacity: 0;
+      animation: cardSlideIn 0.45s ease-out forwards;
+      transition: box-shadow 0.3s;
+    }
+    .meeting-card:hover { box-shadow: var(--shadow-hover); }
+    .card-header {
+      background: var(--accent); color: white; padding: 14px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: relative; overflow: hidden;
+    }
+    .card-header::after {
+      content: ''; position: absolute; top: -20px; left: -20px;
+      width: 80px; height: 80px; background: rgba(255,255,255,0.06); border-radius: 50%;
+    }
+    .meeting-number {
+      font-size: 13px; font-weight: 500; opacity: 0.85;
+      background: rgba(255,255,255,0.12); padding: 3px 10px; border-radius: 20px;
+    }
+    .host-badge { font-size: 16px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+    .card-dates {
+      padding: 12px 18px; display: flex; flex-wrap: wrap; gap: 6px 16px;
+      font-size: 13px; color: var(--muted); border-bottom: 1px solid var(--border);
+      background: rgba(249,246,240,0.5);
+    }
+    .date-item { display: flex; align-items: center; gap: 5px; }
+    .date-item i { font-size: 12px; color: var(--accent); opacity: 0.6; }
+    .ramadan-badge {
+      background: linear-gradient(135deg, #1a6b3c, #0d4d2a); color: #f0e6d3;
+      font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 20px;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 14px 10px; }
+    @media (min-width: 540px) { .task-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    .task-item {
+      border-radius: var(--radius-sm); padding: 12px;
+      border-right: 4px solid transparent;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .task-item:hover { transform: translateY(-1px); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .task-salad { background: var(--salad-bg); border-right-color: var(--salad-border); }
+    .task-sweet { background: var(--sweet-bg); border-right-color: var(--sweet-border); }
+    .task-salty { background: var(--salty-bg); border-right-color: var(--salty-border); }
+    .person-name { display: block; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 4px; }
+    .task-label { display: block; font-size: 13px; font-weight: 500; color: var(--muted); }
+    .task-select {
+      appearance: none; -webkit-appearance: none; width: 100%; margin-top: 6px;
+      padding: 4px 22px 4px 8px; border: 1px solid rgba(0,0,0,0.08); border-radius: 6px;
+      font-family: 'Tajawal', sans-serif; font-size: 11px; color: var(--muted);
+      background-color: rgba(255,255,255,0.7); cursor: pointer; outline: none;
+      transition: border-color 0.2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238B8680'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: left 8px center;
+    }
+    .task-select:focus { border-color: var(--accent); }
+    .card-actions { display: flex; gap: 8px; padding: 0 14px 14px; }
+    .btn-card-action {
+      flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+      padding: 9px 10px; border: 1.5px solid var(--border); border-radius: 8px;
+      background: transparent; font-family: 'Tajawal', sans-serif; font-size: 12px;
+      font-weight: 700; color: var(--fg); cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, transform 0.1s;
+    }
+    .btn-card-action:hover { background: var(--bg); border-color: var(--accent); color: var(--accent); }
+    .btn-card-action:active { transform: scale(0.96); }
+    .btn-card-action i { font-size: 14px; }
+
+    /* ===== منطقة التصدير الكامل (مخفية عن العين) ===== */
+    .export-zone {
+      position: fixed; left: -9999px; top: 0;
+      width: 420px; background: #F9F6F0; font-family: 'Tajawal', sans-serif;
+      direction: rtl; padding: 0; z-index: -1;
+    }
+    .export-zone * { box-sizing: border-box; }
+    .export-zone-header {
+      text-align: center; padding: 20px 16px 12px;
+    }
+    .export-zone-header img {
+      height: 60px; width: auto; object-fit: contain;
+    }
+    .export-zone-title {
+      font-size: 18px; font-weight: 900; color: #4A5D23; margin-top: 4px;
+    }
+    .export-zone-sub {
+      font-size: 11px; color: #8B8680; margin-top: 2px;
+    }
+    .export-zone-line {
+      width: 40px; height: 2px; margin: 8px auto 0;
+      background: linear-gradient(90deg, transparent, #4A5D23, transparent);
+    }
+    .export-card {
+      background: #fff; border-radius: 12px; margin: 10px 12px;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.06); overflow: hidden;
+      border: 1px solid rgba(74,93,35,0.06);
+    }
+    .export-card-head {
+      background: #4A5D23; color: #fff; padding: 10px 14px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px;
+    }
+    .export-card-head span:first-child { background: rgba(255,255,255,0.12); padding: 2px 8px; border-radius: 16px; font-size: 11px; }
+    .export-card-head span:last-child { font-weight: 800; font-size: 15px; }
+    .export-card-dates {
+      padding: 8px 14px; font-size: 11px; color: #8B8680;
+      border-bottom: 1px solid rgba(74,93,35,0.06); display: flex; flex-wrap: wrap; gap: 4px 12px;
+    }
+    .export-card-ramadan {
+      display: inline-block; background: #0d4d2a; color: #f0e6d3;
+      font-size: 9px; font-weight: 700; padding: 1px 7px; border-radius: 12px;
+    }
+    .export-tasks {
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; padding: 10px;
+    }
+    .export-task {
+      border-radius: 8px; padding: 8px; border-right: 3px solid transparent;
+    }
+    .export-task-salad { background: #EDF5E1; border-right-color: #4A5D23; }
+    .export-task-sweet { background: #FFF8E7; border-right-color: #D4A843; }
+    .export-task-salty { background: #F5F2ED; border-right-color: #A89B8C; }
+    .export-task-name { font-size: 13px; font-weight: 800; color: #2C2C2C; }
+    .export-task-label { font-size: 11px; color: #8B8680; margin-top: 2px; }
+
+    /* ===== التذييل ===== */
+    .app-footer {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 90;
+      background: linear-gradient(135deg, #4A5D23, #5a7230); color: white;
+      text-align: center; padding: 10px 16px; font-size: 13px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      box-shadow: 0 -2px 16px rgba(74,93,35,0.2);
+      transform: translateY(100%); transition: transform 0.4s cubic-bezier(.4,0,.2,1);
+    }
+    .app-footer.visible { transform: translateY(0); }
+    .app-footer i { font-size: 16px; }
+
+    /* ===== الإشعارات ===== */
+    .toast-container {
+      position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      z-index: 200; display: flex; flex-direction: column; align-items: center; gap: 8px;
+      pointer-events: none;
+    }
+    .toast {
+      background: var(--fg); color: white; padding: 10px 22px; border-radius: 30px;
+      font-size: 13px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+      animation: toastIn 0.35s ease-out, toastOut 0.3s ease-in 2s forwards;
+      white-space: nowrap;
+    }
+    .loading-overlay {
+      position: fixed; inset: 0; z-index: 300; background: rgba(0,0,0,0.35);
+      display: none; align-items: center; justify-content: center;
+      backdrop-filter: blur(3px);
+    }
+    .loading-overlay.active { display: flex; }
+    .loading-box {
+      background: white; border-radius: 16px; padding: 28px 36px;
+      text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,0.15);
+    }
+    .loading-box i { font-size: 32px; color: var(--accent); animation: spin 1s linear infinite; }
+    .loading-box p { margin-top: 12px; font-size: 14px; font-weight: 600; color: var(--fg); }
+
+    /* ===== الحركات ===== */
+    @keyframes logoReveal {
+      0% { opacity: 0; transform: scale(0.85) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    @keyframes cardSlideIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateY(16px) scale(0.9); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes toastOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(-10px) scale(0.9); }
+    }
+    @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- مؤشر التحميل -->
+  <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-box">
+      <i class="fas fa-circle-notch"></i>
+      <p>جاري تجهيز الصورة...</p>
+    </div>
+  </div>
+
+  <!-- زر الإعدادات العائم -->
+  <button class="settings-toggle" id="settingsBtn" onclick="togglePanel()" aria-label="إعدادات">
+    <i class="fas fa-cog"></i>
+  </button>
+
+  <!-- الترويسة -->
+  <header class="app-header" id="appHeader">
+    <div class="logo-wrapper">
+      <img src="https://z-cdn-media.chatglm.cn/files/a0c3a5d6-3b7b-4008-8099-9af3e5da0a21.png?auth_key=1884025727-b231b9c132114beba74a0b3f53efe2c1-0-64cd9c1814a40a4dc9f5319b6c10f8eb" alt="شعار حياة الوصل" id="logoImg">
+    </div>
+    <div class="app-title">جدول الاجتماعات والمهام</div>
+    <div class="app-subtitle">نظام الجدولة والتوزيع الآلي</div>
+    <div class="header-line"></div>
+  </header>
+
+  <main>
+    <!-- لوحة التحكم -->
+    <div class="control-panel open" id="controlPanel">
+      <div class="control-inner">
+        <div class="control-grid">
+          <div class="control-row">
+            <label class="control-label" for="startDate">تاريخ أول اجتماع</label>
+            <input type="date" id="startDate" class="control-input">
+          </div>
+          <div class="control-row">
+            <label class="control-label" for="numMeetings">عدد الاجتماعات</label>
+            <input type="number" id="numMeetings" class="control-input" min="1" max="52" value="6">
+          </div>
+        </div>
+        <div class="control-grid">
+          <div class="control-row">
+            <label class="control-label" for="firstHost">أول مستضيف</label>
+            <select id="firstHost" class="control-select">
+              <option value="محمد">محمد</option>
+              <option value="عبدالعزيز">عبدالعزيز</option>
+              <option value="سعد">سعد</option>
+            </select>
+          </div>
+          <div class="control-row">
+            <label class="control-label" for="firstSalad">أول شخص للسلطة</label>
+            <select id="firstSalad" class="control-select">
+              <option value="العساف">العساف</option>
+              <option value="محمد">محمد</option>
+              <option value="إبراهيم">إبراهيم</option>
+              <option value="العجمي">العجمي</option>
+              <option value="سعد">سعد</option>
+              <option value="عبدالعزيز">عبدالعزيز</option>
+            </select>
+          </div>
+        </div>
+        <div class="divider"></div>
+        <div class="control-row">
+          <div class="toggle-row">
+            <label class="control-label" style="margin-bottom:0;">تذكير الاشتراك</label>
+            <label class="toggle-wrapper">
+              <input type="checkbox" id="subscriptionToggle" checked onchange="toggleSubscription(this.checked)">
+              <span class="toggle-track"></span>
+            </label>
+          </div>
+        </div>
+        <div class="control-row" id="amountRow">
+          <div class="toggle-row">
+            <span style="font-size:13px; color:var(--muted);">قيمة الاشتراك (ريال)</span>
+            <div style="display:flex; align-items:center; gap:4px;">
+              <input type="number" id="subAmount" class="amount-input" value="150" min="0" onchange="updateSubAmount(this.value)">
+              <span style="font-size:13px; color:var(--muted);">ر.س</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- زر التوليد (يظهر فقط قبل التوليد) -->
+    <button class="btn-generate-only" id="generateOnlyBtn" onclick="handleGenerate()">
+      <i class="fas fa-calendar-check"></i>
+      توليد الجدول
+    </button>
+
+    <!-- شريط الأزرار بعد التوليد -->
+    <div class="action-bar" id="actionBar">
+      <button class="btn-primary" onclick="handleGenerate()">
+        <i class="fas fa-sync-alt"></i>
+        إعادة التوليد
+      </button>
+      <button class="btn-secondary" onclick="exportAllToWhatsApp()">
+        <i class="fab fa-whatsapp" style="color:#25D366;"></i>
+        نسخ الجدول كاملاً للواتساب
+      </button>
+      <button class="btn-secondary" onclick="exportAllAsImage()">
+        <i class="fas fa-image" style="color:var(--accent);"></i>
+        تحميل الجدول كاملاً كصورة
+      </button>
+    </div>
+
+    <!-- الحالة الفارغة -->
+    <div class="empty-state" id="emptyState">
+      <div class="empty-icon"><i class="fas fa-calendar-alt"></i></div>
+      <div class="empty-text">
+        قم بضبط الإعدادات أعلاه<br>
+        ثم اضغط على "توليد الجدول"<br>
+        لإنشاء جدول الاجتماعات تلقائياً
+      </div>
+    </div>
+
+    <!-- حاوية الاجتماعات -->
+    <div class="meetings-container" id="meetingsContainer"></div>
+  </main>
+
+  <!-- التذييل الثابت -->
+  <footer class="app-footer visible" id="appFooter">
+    <i class="fas fa-wallet"></i>
+    <span id="footerText">تجديد الاشتراك 150 ريال</span>
+  </footer>
+
+  <!-- حاوية الإشعارات -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- منطقة التصدير الكامل (مخفية) -->
+  <div class="export-zone" id="exportZone"></div>
+
+  <script>
+    /* ============================================================
+       الثوابت
+    ============================================================ */
+    const HOSTS = ['محمد', 'عبدالعزيز', 'سعد'];
+    const SALAD_CYCLE = ['العساف', 'محمد', 'إبراهيم', 'العجمي', 'سعد', 'عبدالعزيز'];
+    const ALL_PEOPLE = ['العساف', 'محمد', 'إبراهيم', 'العجمي', 'سعد', 'عبدالعزيز'];
+    const SWEET_PARTNERS = { 'محمد': 'إبراهيم', 'عبدالعزيز': 'العجمي', 'سعد': 'العساف' };
+    const LOGO_URL = document.getElementById('logoImg').src;
+
+    let meetings = [];
+    let subAmount = 150;
+
+    /* ============================================================
+       أدوات التاريخ الهجري
+    ============================================================ */
+    function getHijriParts(date) {
+      try {
+        const parts = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', {
+          year: 'numeric', month: 'numeric', day: 'numeric'
+        }).formatToParts(date);
+        let y = 0, m = 0, d = 0;
+        parts.forEach(p => {
+          if (p.type === 'year') y = parseInt(p.value);
+          if (p.type === 'month') m = parseInt(p.value);
+          if (p.type === 'day') d = parseInt(p.value);
+        });
+        return { year: y, month: m, day: d };
+      } catch (e) { return { year: 0, month: 0, day: 0 }; }
+    }
+
+    function getHijriDisplay(date) {
+      try {
+        return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+          year: 'numeric', month: 'long', day: 'numeric'
+        }).format(date);
+      } catch (e) { return ''; }
+    }
+
+    function getGregorianDisplay(date) {
+      return new Intl.DateTimeFormat('ar-SA', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      }).format(date);
+    }
+
+    function getDayName(date) {
+      return new Intl.DateTimeFormat('ar-SA', { weekday: 'long' }).format(date);
+    }
+
+    /* ============================================================
+       فحص الإجازات
+    ============================================================ */
+    function isSkipRange(date) {
+      const h = getHijriParts(date);
+      if (!h.year) return false;
+      if (h.month === 9 && h.day >= 20) return true;
+      if (h.month === 10 && h.day <= 5) return true;
+      if (h.month === 12 && h.day >= 9 && h.day <= 13) return true;
+      return false;
+    }
+
+    function isRamadan(date) {
+      return getHijriParts(date).month === 9;
+    }
+
+    function findValidDate(date) {
+      let safe = 0;
+      while (isSkipRange(date) && safe < 50) {
+        date = new Date(date.getTime() + 14 * 24 * 60 * 60 * 1000);
+        safe++;
+      }
+      return date;
+    }
+
+    /* ============================================================
+       توليد الجدول
+    ============================================================ */
+    function generateMeetings() {
+      const startDateStr = document.getElementById('startDate').value;
+      const numMeetings = parseInt(document.getElementById('numMeetings').value);
+      const firstHost = document.getElementById('firstHost').value;
+      const firstSalad = document.getElementById('firstSalad').value;
+
+      const hostStartIdx = HOSTS.indexOf(firstHost);
+      const saladStartIdx = SALAD_CYCLE.indexOf(firstSalad);
+      meetings = [];
+
+      for (let i = 0; i < numMeetings; i++) {
+        let date = new Date(startDateStr + 'T12:00:00');
+        date = new Date(date.getTime() + i * 14 * 24 * 60 * 60 * 1000);
+        date = findValidDate(date);
+
+        const host = HOSTS[(hostStartIdx + i) % 3];
+        const sweetPartner = SWEET_PARTNERS[host];
+
+        // تحديد السلطة مع تجنب التعارض
+        let saladIdx = (saladStartIdx + i) % 6;
+        let saladPerson = SALAD_CYCLE[saladIdx];
+        let attempts = 0;
+        while ((saladPerson === host || saladPerson === sweetPartner) && attempts < 6) {
+          saladIdx = (saladIdx + 1) % 6;
+          saladPerson = SALAD_CYCLE[saladIdx];
+          attempts++;
+        }
+
+        const isRam = isRamadan(date);
+        const sweetLabel = isRam ? 'حلى رمضاني' : 'حلى';
+        const tasks = {};
+        tasks[host] = sweetLabel;
+        tasks[sweetPartner] = sweetLabel;
+        tasks[saladPerson] = 'سلطة';
+        ALL_PEOPLE.forEach(p => { if (!tasks[p]) tasks[p] = 'مالح'; });
+
+        meetings.push({ date, host, tasks, isRamadan: isRam });
+      }
+    }
+
+    /* ============================================================
+       عرض البطاقات
+    ============================================================ */
+    function renderMeetings() {
+      const container = document.getElementById('meetingsContainer');
+      const empty = document.getElementById('emptyState');
+      const genBtn = document.getElementById('generateOnlyBtn');
+      const actionBar = document.getElementById('actionBar');
+
+      if (meetings.length === 0) {
+        container.innerHTML = '';
+        empty.style.display = 'block';
+        genBtn.style.display = 'flex';
+        actionBar.classList.remove('visible');
+        return;
+      }
+
+      empty.style.display = 'none';
+      genBtn.style.display = 'none';
+      actionBar.classList.add('visible');
+
+      container.innerHTML = meetings.map((m, idx) => buildCardHTML(m, idx)).join('');
+    }
+
+    function buildCardHTML(meeting, idx) {
+      const gregDate = getGregorianDisplay(meeting.date);
+      const hijriDate = getHijriDisplay(meeting.date);
+      const dayName = getDayName(meeting.date);
+      const ramadanHTML = meeting.isRamadan
+        ? '<span class="ramadan-badge"><i class="fas fa-moon"></i> رمضان</span>' : '';
+
+      let tasksHTML = '';
+      ALL_PEOPLE.forEach(person => {
+        const task = meeting.tasks[person];
+        const taskType = task.includes('حلى') ? 'sweet' : task === 'سلطة' ? 'salad' : 'salty';
+        const emoji = task === 'سلطة' ? '🥗' : task.includes('حلى') ? '🍰' : '🍲';
+        const selVal = task.includes('حلى') ? 'حلى' : task;
+
+        tasksHTML += `
+          <div class="task-item task-${taskType}" id="task-${idx}-${person}">
+            <span class="person-name">${person}</span>
+            <span class="task-label">${emoji} ${task}</span>
+            <select class="task-select" onchange="handleTaskChange(${idx}, '${person}', this.value)" aria-label="تغيير مهمة ${person}">
+              <option value="سلطة" ${selVal === 'سلطة' ? 'selected' : ''}>سلطة</option>
+              <option value="حلى" ${selVal === 'حلى' ? 'selected' : ''}>حلى</option>
+              <option value="مالح" ${selVal === 'مالح' ? 'selected' : ''}>مالح</option>
+            </select>
+          </div>`;
+      });
+
+      return `
+        <div class="meeting-card" id="card-${idx}" style="animation-delay:${idx * 0.08}s;">
+          <div class="card-header">
+            <span class="meeting-number">الاجتماع ${idx + 1}</span>
+            <span class="host-badge"><i class="fas fa-home"></i> ${meeting.host}</span>
+          </div>
+          <div class="card-dates">
+            <span class="date-item"><i class="fas fa-calendar-day"></i> ${gregDate}</span>
+            <span class="date-item"><i class="fas fa-mosque"></i> ${hijriDate}</span>
+            <span class="date-item"><i class="fas fa-clock"></i> ${dayName}</span>
+            ${ramadanHTML}
+          </div>
+          <div class="task-grid">${tasksHTML}</div>
+          <div class="card-actions">
+            <button class="btn-card-action" onclick="exportWhatsApp(${idx})">
+              <i class="fab fa-whatsapp" style="color:#25D366;"></i> واتساب
+            </button>
+            <button class="btn-card-action" onclick="exportImage(${idx})">
+              <i class="fas fa-image" style="color:var(--accent);"></i> تحميل صورة
+            </button>
+          </div>
+        </div>`;
+    }
+
+    /* ============================================================
+       التعديل اليدوي
+    ============================================================ */
+    function handleTaskChange(meetingIdx, person, newTask) {
+      const meeting = meetings[meetingIdx];
+      const finalTask = (meeting.isRamadan && newTask === 'حلى') ? 'حلى رمضاني' : newTask;
+      meeting.tasks[person] = finalTask;
+
+      const el = document.getElementById(`task-${meetingIdx}-${person}`);
+      if (!el) return;
+      const label = el.querySelector('.task-label');
+      const emoji = finalTask === 'سلطة' ? '🥗' : finalTask.includes('حلى') ? '🍰' : '🍲';
+      label.textContent = `${emoji} ${finalTask}`;
+
+      const taskType = finalTask.includes('حلى') ? 'sweet' : finalTask === 'سلطة' ? 'salad' : 'salty';
+      el.className = `task-item task-${taskType}`;
+      showToast('تم تحديث المهمة');
+    }
+
+    /* ============================================================
+       التصدير للواتساب
+    ============================================================ */
+    function formatMeetingText(meeting, idx) {
+      const gregDate = getGregorianDisplay(meeting.date);
+      const hijriDate = getHijriDisplay(meeting.date);
+      const dayName = getDayName(meeting.date);
+
+      let text = `━━━━━━━━━━━━━━━━\n`;
+      text += `📋 *اجتماع حياة الوصل ${idx + 1}*\n`;
+      text += `━━━━━━━━━━━━━━━━\n`;
+      text += `🏠 المستضيف: *${meeting.host}*\n`;
+      text += `📆 ${gregDate}\n📿 ${hijriDate}\n🗓 ${dayName}\n`;
+      if (meeting.isRamadan) text += `🌙 *رمضان مبارك*\n`;
+      text += `━━━━━━━━━━━━━━━━\n`;
+
+      const salad = [], sweet = [], salty = [];
+      ALL_PEOPLE.forEach(p => {
+        const t = meeting.tasks[p];
+        if (t === 'سلطة') salad.push(p);
+        else if (t.includes('حلى')) sweet.push(p);
+        else salty.push(p);
+      });
+      if (salad.length) text += `🥗 سلطة: ${salad.join('، ')}\n`;
+      if (sweet.length) text += `🍰 ${meeting.isRamadan ? 'حلى رمضاني' : 'حلى'}: ${sweet.join('، ')}\n`;
+      if (salty.length) text += `🍲 مالح: ${salty.join('، ')}\n`;
+      text += `━━━━━━━━━━━━━━━━`;
+      return text;
+    }
+
+    function exportWhatsApp(idx) {
+      copyToClipboard(formatMeetingText(meetings[idx], idx));
+      showToast('تم النسخ - الصقه في واتساب');
+    }
+
+    function exportAllToWhatsApp() {
+      let text = `📋 *جدول اجتماعات حياة الوصل*\n\n`;
+      meetings.forEach((m, i) => { text += formatMeetingText(m, i) + '\n\n'; });
+      copyToClipboard(text);
+      showToast('تم نسخ الجدول كاملاً');
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;opacity:0;';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    }
+
+    /* ============================================================
+       تصدير صورة بطاقة واحدة
+    ============================================================ */
+    async function exportImage(idx) {
+      const card = document.getElementById(`card-${idx}`);
+      if (!card) return;
+
+      const actions = card.querySelector('.card-actions');
+      const selects = card.querySelectorAll('.task-select');
+      actions.style.display = 'none';
+      selects.forEach(s => s.style.display = 'none');
+
+      showLoading(true);
+      try {
+        // تأخير بسيط لضمان تطبيق الإخفاء
+        await new Promise(r => setTimeout(r, 100));
+
+        const canvas = await html2canvas(card, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#F9F6F0',
+          logging: false,
+          imageTimeout: 15000
+        });
+
+        const link = document.createElement('a');
+        link.download = `اجتماع-${idx + 1}-حياة-الوصل.png`;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('تم تحميل الصورة بنجاح');
+      } catch (err) {
+        console.error('Export error:', err);
+        showToast('حدث خطأ أثناء التصدير');
+      }
+
+      actions.style.display = '';
+      selects.forEach(s => s.style.display = '');
+      showLoading(false);
+    }
+
+    /* ============================================================
+       تصدير صورة الجدول الكامل
+    ============================================================ */
+    async function exportAllAsImage() {
+      if (!meetings.length) return;
+      showLoading(true);
+
+      try {
+        const zone = document.getElementById('exportZone');
+        // بناء محتوى التصدير
+        let html = `
+          <div class="export-zone-header">
+            <img src="${LOGO_URL}" crossorigin="anonymous" alt="شعار">
+            <div class="export-zone-title">جدول اجتماعات حياة الوصل</div>
+            <div class="export-zone-sub">الجدول الدوري للمهام</div>
+            <div class="export-zone-line"></div>
+          </div>`;
+
+        meetings.forEach((m, idx) => {
+          const gregDate = getGregorianDisplay(m.date);
+          const hijriDate = getHijriDisplay(m.date);
+          const dayName = getDayName(m.date);
+          const ramHTML = m.isRamadan ? `<span class="export-card-ramadan">رمضان</span>` : '';
+
+          let tasksHTML = '';
+          ALL_PEOPLE.forEach(p => {
+            const t = m.tasks[p];
+            const type = t.includes('حلى') ? 'sweet' : t === 'سلطة' ? 'salad' : 'salty';
+            const emoji = t === 'سلطة' ? '🥗' : t.includes('حلى') ? '🍰' : '🍲';
+            tasksHTML += `
+              <div class="export-task export-task-${type}">
+                <div class="export-task-name">${p}</div>
+                <div class="export-task-label">${emoji} ${t}</div>
+              </div>`;
+          });
+
+          html += `
+            <div class="export-card">
+              <div class="export-card-head">
+                <span>الاجتماع ${idx + 1}</span>
+                <span><i class="fas fa-home" style="margin-left:4px;font-size:12px;"></i>${m.host}</span>
+              </div>
+              <div class="export-card-dates">
+                <span>${gregDate}</span>
+                <span>${hijriDate}</span>
+                <span>${dayName}</span>
+                ${ramHTML}
+              </div>
+              <div class="export-tasks">${tasksHTML}</div>
+            </div>`;
+        });
+
+        zone.innerHTML = html;
+
+        // تأخير لضمان تحميل الصور
+        await new Promise(r => setTimeout(r, 500));
+
+        // تحريك المنطقة إلى موضع مرئي مؤقتاً
+        zone.style.left = '0';
+        zone.style.top = '0';
+        zone.style.position = 'absolute';
+        zone.style.zIndex = '-1';
+
+        await new Promise(r => setTimeout(r, 100));
+
+        const canvas = await html2canvas(zone, {
+          scale: 2,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#F9F6F0',
+          logging: false,
+          imageTimeout: 15000
+        });
+
+        const link = document.createElement('a');
+        link.download = 'جدول-حياة-الوصل-كامل.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('تم تحميل الجدول كاملاً كصورة');
+      } catch (err) {
+        console.error('Full export error:', err);
+        showToast('حدث خطأ أثناء التصدير');
+      }
+
+      // إعادة المنطقة لموضعها المخفي
+      const zone = document.getElementById('exportZone');
+      zone.style.left = '-9999px';
+      zone.style.top = '0';
+      zone.style.position = 'fixed';
+      zone.innerHTML = '';
+      showLoading(false);
+    }
+
+    /* ============================================================
+       واجهة التحميل
+    ============================================================ */
+    function showLoading(show) {
+      document.getElementById('loadingOverlay').classList.toggle('active', show);
+    }
+
+    /* ============================================================
+       التحكم بالواجهة
+    ============================================================ */
+    function togglePanel() {
+      document.getElementById('controlPanel').classList.toggle('open');
+      document.getElementById('settingsBtn').classList.toggle('open');
+    }
+
+    function toggleSubscription(show) {
+      const footer = document.getElementById('appFooter');
+      const amountRow = document.getElementById('amountRow');
+      footer.classList.toggle('visible', show);
+      amountRow.style.opacity = show ? '1' : '0.4';
+      amountRow.style.pointerEvents = show ? 'auto' : 'none';
+    }
+
+    function updateSubAmount(val) {
+      subAmount = Math.max(0, parseInt(val) || 0);
+      document.getElementById('footerText').textContent = `تجديد الاشتراك ${subAmount} ريال`;
+    }
+
+    function showToast(message) {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 2500);
+    }
+
+    /* ============================================================
+       التحقق والتوليد
+    ============================================================ */
+    function handleGenerate() {
+      const dateVal = document.getElementById('startDate').value;
+      const numVal = parseInt(document.getElementById('numMeetings').value);
+
+      if (!dateVal) { showToast('يرجى تحديد تاريخ أول اجتماع'); return; }
+      if (!numVal || numVal < 1 || numVal > 52) { showToast('يرجى إدخال عدد صحيح (1-52)'); return; }
+
+      generateMeetings();
+      renderMeetings();
+
+      if (meetings.length > 0) {
+        setTimeout(() => {
+          document.getElementById('meetingsContainer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 200);
+        showToast(`تم توليد ${meetings.length} اجتماع بنجاح`);
+      }
+    }
+
+    /* ============================================================
+       التهيئة
+    ============================================================ */
+    (function init() {
+      // تاريخ افتراضي: أقرب خميس
+      const today = new Date();
+      const dow = today.getDay();
+      let offset = (4 - dow + 7) % 7;
+      if (offset === 0) offset = 7;
+      const next = new Date(today.getTime() + offset * 24 * 60 * 60 * 1000);
+      const y = next.getFullYear();
+      const m = String(next.getMonth() + 1).padStart(2, '0');
+      const d = String(next.getDate()).padStart(2, '0');
+      document.getElementById('startDate').value = `${y}-${m}-${d}`;
+
+      // فحص دعم التاريخ الهجري
+      try {
+        const tp = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', {
+          year: 'numeric', month: 'numeric', day: 'numeric'
+        }).formatToParts(new Date());
+        if (!tp.some(p => p.type === 'month')) showToast('المتصفح لا يدعم التاريخ الهجري');
+      } catch (e) { showToast('المتصفح لا يدعم التاريخ الهجري'); }
+    })();
+  </script>
+</body>
+</html>
