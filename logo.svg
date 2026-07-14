@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="120" viewBox="0 0 280 120" role="img" aria-label="شعار حياة الوصل">
+  <rect width="280" height="120" rx="24" fill="#F9F6F0"/>
+  <circle cx="70" cy="60" r="28" fill="#4A5D23"/>
+  <path d="M70 34c14 0 26 11 26 25 0 14-12 25-26 25s-26-11-26-25c0-14 12-25 26-25z" fill="#FFF8E7"/>
+  <path d="M54 60h32" stroke="#4A5D23" stroke-width="4" stroke-linecap="round"/>
+  <text x="116" y="56" font-family="Tajawal, Arial, sans-serif" font-size="24" font-weight="700" fill="#4A5D23">حياة الوصل</text>
+  <text x="116" y="84" font-family="Tajawal, Arial, sans-serif" font-size="12" fill="#8B8680">جدول الاجتماعات والمهام</text>
+</svg>
