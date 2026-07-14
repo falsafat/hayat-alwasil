@@ -536,8 +536,8 @@
         نسخ الجدول كاملاً للواتساب
       </button>
       <button class="btn-secondary" onclick="exportAllAsImage()">
-        <i class="fas fa-image" style="color:var(--accent);"></i>
-        تحميل الجدول كاملاً كصورة
+        <i class="fas fa-share-alt" style="color:var(--accent);"></i>
+        مشاركة الجدول كاملاً كصورة
       </button>
     </div>
 
@@ -863,11 +863,10 @@
           imageTimeout: 15000
         });
 
-        const link = document.createElement('a');
-        link.download = `اجتماع-${idx + 1}-حياة-الوصل.png`;
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        showToast('تم تحميل الصورة بنجاح');
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        if (!blob) throw new Error('Unable to generate image data');
+
+        await shareImageOrFallback(blob, `اجتماع-${idx + 1}-حياة-الوصل.png`, 'تم تحميل الصورة بنجاح', 'تم مشاركة الصورة بنجاح');
       } catch (err) {
         console.error('Export error:', err);
         showToast('حدث خطأ أثناء التصدير');
@@ -876,6 +875,39 @@
       actions.style.display = '';
       selects.forEach(s => s.style.display = '');
       showLoading(false);
+    }
+
+    async function shareImageOrFallback(blob, fileName, downloadText, shareText) {
+      const file = new File([blob], fileName, { type: 'image/png' });
+      const canShareFiles = navigator.canShare ? navigator.canShare({ files: [file] }) : true;
+      const canShare = navigator.share && canShareFiles;
+
+      if (canShare) {
+        try {
+          await navigator.share({
+            files: [file],
+            title: 'جدول حياة الوصل',
+            text: 'صورة جدول الاجتماعات والمهام'
+          });
+          showToast(shareText);
+          return;
+        } catch (shareError) {
+          const canceled = shareError.name === 'AbortError' || /cancel/i.test(shareError.message);
+          if (canceled) {
+            showToast('تم إلغاء المشاركة');
+            return;
+          }
+          console.warn('Share failed, falling back to download', shareError);
+        }
+      }
+
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = url;
+      link.click();
+      URL.revokeObjectURL(url);
+      showToast(downloadText);
     }
 
     /* ============================================================
@@ -952,11 +984,10 @@
           imageTimeout: 15000
         });
 
-        const link = document.createElement('a');
-        link.download = 'جدول-حياة-الوصل-كامل.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        showToast('تم تحميل الجدول كاملاً كصورة');
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        if (!blob) throw new Error('Unable to generate image data');
+
+        await shareImageOrFallback(blob, 'جدول-حياة-الوصل-كامل.png', 'تم تحميل الجدول كاملاً كصورة', 'تم مشاركة الجدول كاملاً كصورة');
       } catch (err) {
         console.error('Full export error:', err);
         showToast('حدث خطأ أثناء التصدير');
