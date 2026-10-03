@@ -268,7 +268,7 @@
     .meeting-card:hover { box-shadow: var(--shadow-hover); }
     .card-header {
       background: var(--accent); color: white; padding: 14px 18px;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: flex-start;
       flex-wrap: nowrap; gap: 10px;
       position: relative; overflow: hidden;
     }
@@ -277,13 +277,10 @@
       content: ''; position: absolute; top: -20px; left: -20px;
       width: 80px; height: 80px; background: rgba(255,255,255,0.06); border-radius: 50%;
     }
-    .meeting-number {
+    .meeting-title {
       font-size: 16px; font-weight: 800; opacity: 1;
-      white-space: nowrap;
-    }
-    .host-badge {
-      font-size: 16px; font-weight: 800; display: flex; align-items: center;
-      gap: 6px; white-space: nowrap;
+      white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+      text-align: right;
     }
     .card-dates {
       padding: 12px 18px; display: flex; flex-wrap: wrap; gap: 6px 16px;
@@ -342,16 +339,17 @@
     }
     .export-zone * { box-sizing: border-box; }
     .export-zone-header {
-      text-align: center; padding: 4px 16px 4px;
+      text-align: center; padding: 46px 20px 16px;
     }
     .export-zone-header img {
-      height: 40px; width: auto; max-width: 100%; object-fit: contain;
+      height: 64px; width: auto; max-width: 100%; object-fit: contain;
+      margin-bottom: 14px;
     }
     .export-zone-title {
-      font-size: 16px; font-weight: 900; color: #4A5D23; margin-top: 0;
+      font-size: 18px; font-weight: 900; color: #4A5D23; margin-top: 0;
     }
     .export-zone-sub {
-      font-size: 10px; color: #443F38; margin-top: 0;
+      font-size: 12px; color: #443F38; margin-top: 2px;
     }
     .export-card {
       background: #fff; border-radius: 12px; margin: 10px 12px;
@@ -360,16 +358,13 @@
     }
     .export-card-head {
       background: #4A5D23; color: #fff; padding: 10px 14px;
-      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      display: flex; justify-content: flex-start; align-items: center; gap: 8px;
       flex-wrap: nowrap;
       font-size: 13px;
     }
-    .export-meeting-number {
+    .export-meeting-title {
       font-size: 15px; font-weight: 800; white-space: nowrap;
-    }
-    .export-host {
-      font-weight: 800; font-size: 15px; display: inline-flex; align-items: center;
-      gap: 4px; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 5px;
     }
     .export-card-dates {
       padding: 8px 14px; font-size: 11px; color: #443F38;
@@ -617,6 +612,10 @@
       return logoImg && logoImg.src ? logoImg.src : FALLBACK_LOGO_URL;
     }
 
+    function toArabicDigits(n) {
+      return String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+    }
+
     /* ============================================================
        أدوات التاريخ الهجري
     ============================================================ */
@@ -769,8 +768,7 @@
       return `
         <div class="meeting-card" id="card-${idx}" style="animation-delay:${idx * 0.08}s;">
           <div class="card-header">
-            <span class="host-badge"><i class="fas fa-home" aria-hidden="true"></i> ${meeting.host}</span>
-            <span class="meeting-number">الاجتماع ${idx + 1}</span>
+            <span class="meeting-title">الاجتماع ${toArabicDigits(idx + 1)} على <i class="fas fa-home" aria-hidden="true"></i> ${meeting.host}</span>
           </div>
           <div class="card-dates">
             <span class="date-item"><i class="fas fa-calendar-day"></i> ${gregDate}</span>
@@ -977,8 +975,7 @@
           html += `
             <div class="export-card">
               <div class="export-card-head">
-                <span class="export-host"><i class="fas fa-home" aria-hidden="true" style="font-size:12px;"></i>${m.host}</span>
-                <span class="export-meeting-number">الاجتماع ${idx + 1}</span>
+                <span class="export-meeting-title">الاجتماع ${toArabicDigits(idx + 1)} على <i class="fas fa-home" aria-hidden="true"></i> ${m.host}</span>
               </div>
               <div class="export-card-dates">
                 <span>${gregDate}</span>
