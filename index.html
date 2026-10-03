@@ -643,7 +643,8 @@
     }
 
     function getGregorianDisplay(date) {
-      return new Intl.DateTimeFormat('ar-SA', {
+      // بعض بيئات ICU تجعل التقويم الهجري افتراضياً لـ ar-SA، لذا نثبّت الميلادي صراحةً
+      return new Intl.DateTimeFormat('ar-SA-u-ca-gregory', {
         year: 'numeric', month: 'long', day: 'numeric'
       }).format(date);
     }
@@ -768,7 +769,7 @@
       return `
         <div class="meeting-card" id="card-${idx}" style="animation-delay:${idx * 0.08}s;">
           <div class="card-header">
-            <span class="meeting-title">الاجتماع ${toArabicDigits(idx + 1)} على <i class="fas fa-home" aria-hidden="true"></i> ${meeting.host}</span>
+            <span class="meeting-title">الاجتماع ${toArabicDigits(idx + 1)} <i class="fas fa-home" aria-hidden="true"></i> ${meeting.host}</span>
           </div>
           <div class="card-dates">
             <span class="date-item"><i class="fas fa-calendar-day"></i> ${gregDate}</span>
@@ -817,7 +818,7 @@
       text += `📋 *اجتماع حياة الوصل ${idx + 1}*\n`;
       text += `━━━━━━━━━━━━━━━━\n`;
       text += `🏠 المستضيف: *${meeting.host}*\n`;
-      text += `📆 ${gregDate}\n📿 ${hijriDate}\n`;
+      text += `📆 ${gregDate} (ميلادي)\n📿 ${hijriDate} (هجري)\n`;
       if (meeting.isRamadan) text += `🌙 *رمضان مبارك*\n`;
       text += `━━━━━━━━━━━━━━━━\n`;
 
@@ -975,7 +976,7 @@
           html += `
             <div class="export-card">
               <div class="export-card-head">
-                <span class="export-meeting-title">الاجتماع ${toArabicDigits(idx + 1)} على <i class="fas fa-home" aria-hidden="true"></i> ${m.host}</span>
+                <span class="export-meeting-title">الاجتماع ${toArabicDigits(idx + 1)} <i class="fas fa-home" aria-hidden="true"></i> ${m.host}</span>
               </div>
               <div class="export-card-dates">
                 <span>${gregDate}</span>
