@@ -281,10 +281,6 @@
       font-size: 16px; font-weight: 800; opacity: 1;
       white-space: nowrap;
     }
-    .header-sep {
-      flex: 0 0 auto; color: rgba(255,255,255,0.85); font-weight: 700;
-    }
-    .header-sep::before { content: '-'; }
     .host-badge {
       font-size: 16px; font-weight: 800; display: flex; align-items: center;
       gap: 6px; white-space: nowrap;
@@ -357,10 +353,6 @@
     .export-zone-sub {
       font-size: 10px; color: #443F38; margin-top: 0;
     }
-    .export-zone-line {
-      width: 36px; height: 2px; margin: 4px auto 0;
-      background: linear-gradient(90deg, transparent, #4A5D23, transparent);
-    }
     .export-card {
       background: #fff; border-radius: 12px; margin: 10px 12px;
       box-shadow: 0 1px 8px rgba(0,0,0,0.06); overflow: hidden;
@@ -375,8 +367,6 @@
     .export-meeting-number {
       font-size: 15px; font-weight: 800; white-space: nowrap;
     }
-    .export-head-sep { flex: 0 0 auto; color: rgba(255,255,255,0.85); font-weight: 700; }
-    .export-head-sep::before { content: '-'; }
     .export-host {
       font-weight: 800; font-size: 15px; display: inline-flex; align-items: center;
       gap: 4px; white-space: nowrap;
@@ -412,7 +402,12 @@
       transform: translateY(100%); transition: transform 0.4s cubic-bezier(.4,0,.2,1);
     }
     .app-footer.visible { transform: translateY(0); }
+    .app-footer #footerText { white-space: nowrap; }
     .app-footer i { font-size: 16px; }
+    @media (max-width: 380px) {
+      .app-footer { padding: 9px 8px; font-size: 12px; gap: 6px; }
+      .app-footer i { font-size: 14px; }
+    }
 
     /* ===== الإشعارات ===== */
     .toast-container {
@@ -775,7 +770,6 @@
         <div class="meeting-card" id="card-${idx}" style="animation-delay:${idx * 0.08}s;">
           <div class="card-header">
             <span class="host-badge"><i class="fas fa-home" aria-hidden="true"></i> ${meeting.host}</span>
-            <span class="header-sep" aria-hidden="true"></span>
             <span class="meeting-number">الاجتماع ${idx + 1}</span>
           </div>
           <div class="card-dates">
@@ -961,7 +955,6 @@
             <img src="${getCurrentLogoUrl()}" alt="شعار">
             <div class="export-zone-title">جدول اجتماعات حياة الوصل</div>
             <div class="export-zone-sub">الجدول الدوري للمهام</div>
-            <div class="export-zone-line"></div>
           </div>`;
 
         meetings.forEach((m, idx) => {
@@ -985,7 +978,6 @@
             <div class="export-card">
               <div class="export-card-head">
                 <span class="export-host"><i class="fas fa-home" aria-hidden="true" style="font-size:12px;"></i>${m.host}</span>
-                <span class="export-head-sep" aria-hidden="true"></span>
                 <span class="export-meeting-number">الاجتماع ${idx + 1}</span>
               </div>
               <div class="export-card-dates">
