@@ -268,17 +268,17 @@
     .meeting-card:hover { box-shadow: var(--shadow-hover); }
     .card-header {
       background: var(--accent); color: white; padding: 14px 18px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex; align-items: center; justify-content: space-between;
       flex-wrap: nowrap; gap: 10px;
       position: relative; overflow: hidden;
     }
+    .card-header > span { position: relative; z-index: 1; }
     .card-header::after {
       content: ''; position: absolute; top: -20px; left: -20px;
       width: 80px; height: 80px; background: rgba(255,255,255,0.06); border-radius: 50%;
     }
     .meeting-number {
-      font-size: 13px; font-weight: 700; opacity: 1;
-      background: rgba(255,255,255,0.12); padding: 3px 10px; border-radius: 20px;
+      font-size: 16px; font-weight: 800; opacity: 1;
       white-space: nowrap;
     }
     .header-sep {
@@ -301,21 +301,23 @@
       font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 20px;
       display: inline-flex; align-items: center; gap: 4px;
     }
-    .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 14px 10px; }
+    .task-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 10px 8px; }
     @media (min-width: 540px) { .task-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    @media (max-width: 359px) { .task-grid { grid-template-columns: 1fr; } }
     .task-item {
-      border-radius: var(--radius-sm); padding: 12px;
+      border-radius: var(--radius-sm); padding: 9px 10px;
       border-right: 4px solid transparent;
+      display: flex; align-items: center; flex-wrap: wrap; gap: 4px 6px;
       transition: transform 0.2s, box-shadow 0.2s;
     }
     .task-item:hover { transform: translateY(-1px); box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
     .task-salad { background: var(--salad-bg); border-right-color: var(--salad-border); }
     .task-sweet { background: var(--sweet-bg); border-right-color: var(--sweet-border); }
     .task-salty { background: var(--salty-bg); border-right-color: var(--salty-border); }
-    .person-name { display: block; font-size: 15px; font-weight: 800; color: var(--fg); margin-bottom: 4px; }
-    .task-label { display: block; font-size: 13px; font-weight: 600; color: var(--muted); }
+    .person-name { font-size: 14px; font-weight: 800; color: var(--fg); white-space: nowrap; }
+    .task-label { font-size: 14px; font-weight: 600; color: var(--muted); white-space: nowrap; }
     .task-select {
-      appearance: none; -webkit-appearance: none; width: 100%; margin-top: 6px;
+      appearance: none; -webkit-appearance: none; width: 100%; margin-top: 4px;
       padding: 4px 22px 4px 8px; border: 1px solid rgba(74,93,35,0.65); border-radius: 6px;
       font-family: 'Tajawal', sans-serif; font-size: 11px; font-weight: 600; color: var(--fg);
       background-color: rgba(255,255,255,0.7); cursor: pointer; outline: none;
@@ -339,7 +341,7 @@
     /* ===== منطقة التصدير الكامل (مخفية عن العين) ===== */
     .export-zone {
       position: fixed; left: -9999px; top: 0;
-      width: 420px; background: #F9F6F0; font-family: 'Tajawal', sans-serif;
+      width: 460px; background: #F9F6F0; font-family: 'Tajawal', sans-serif;
       direction: rtl; padding: 0; z-index: -1;
     }
     .export-zone * { box-sizing: border-box; }
@@ -366,13 +368,12 @@
     }
     .export-card-head {
       background: #4A5D23; color: #fff; padding: 10px 14px;
-      display: flex; justify-content: center; align-items: center; gap: 8px;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
       flex-wrap: nowrap;
       font-size: 13px;
     }
     .export-meeting-number {
-      background: rgba(255,255,255,0.12); padding: 2px 8px; border-radius: 16px;
-      font-size: 11px; white-space: nowrap;
+      font-size: 15px; font-weight: 800; white-space: nowrap;
     }
     .export-head-sep { flex: 0 0 auto; color: rgba(255,255,255,0.85); font-weight: 700; }
     .export-head-sep::before { content: '-'; }
@@ -389,16 +390,17 @@
       font-size: 9px; font-weight: 700; padding: 1px 7px; border-radius: 12px;
     }
     .export-tasks {
-      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; padding: 10px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; padding: 8px;
     }
     .export-task {
-      border-radius: 8px; padding: 8px; border-right: 3px solid transparent;
+      border-radius: 8px; padding: 7px 8px; border-right: 3px solid transparent;
+      display: flex; align-items: center; flex-wrap: wrap; gap: 3px 6px;
     }
     .export-task-salad { background: #EDF5E1; border-right-color: #4A5D23; }
     .export-task-sweet { background: #FFF8E7; border-right-color: #D4A843; }
     .export-task-salty { background: #F5F2ED; border-right-color: #6F6558; }
-    .export-task-name { font-size: 13px; font-weight: 800; color: #2C2C2C; }
-    .export-task-label { font-size: 11px; font-weight: 600; color: #443F38; margin-top: 2px; }
+    .export-task-name { font-size: 12px; font-weight: 800; color: #2C2C2C; white-space: nowrap; }
+    .export-task-label { font-size: 12px; font-weight: 600; color: #443F38; white-space: nowrap; }
 
     /* ===== التذييل ===== */
     .app-footer {
@@ -652,10 +654,6 @@
       }).format(date);
     }
 
-    function getDayName(date) {
-      return new Intl.DateTimeFormat('ar-SA', { weekday: 'long' }).format(date);
-    }
-
     /* ============================================================
        فحص الإجازات
     ============================================================ */
@@ -751,7 +749,6 @@
     function buildCardHTML(meeting, idx) {
       const gregDate = getGregorianDisplay(meeting.date);
       const hijriDate = getHijriDisplay(meeting.date);
-      const dayName = getDayName(meeting.date);
       const ramadanHTML = meeting.isRamadan
         ? '<span class="ramadan-badge"><i class="fas fa-moon"></i> رمضان</span>' : '';
 
@@ -777,14 +774,13 @@
       return `
         <div class="meeting-card" id="card-${idx}" style="animation-delay:${idx * 0.08}s;">
           <div class="card-header">
-            <span class="meeting-number">الاجتماع ${idx + 1}</span>
-            <span class="header-sep" aria-hidden="true"></span>
             <span class="host-badge"><i class="fas fa-home" aria-hidden="true"></i> ${meeting.host}</span>
+            <span class="header-sep" aria-hidden="true"></span>
+            <span class="meeting-number">الاجتماع ${idx + 1}</span>
           </div>
           <div class="card-dates">
             <span class="date-item"><i class="fas fa-calendar-day"></i> ${gregDate}</span>
             <span class="date-item"><i class="fas fa-mosque"></i> ${hijriDate}</span>
-            <span class="date-item"><i class="fas fa-clock"></i> ${dayName}</span>
             ${ramadanHTML}
           </div>
           <div class="task-grid">${tasksHTML}</div>
@@ -824,13 +820,12 @@
     function formatMeetingText(meeting, idx) {
       const gregDate = getGregorianDisplay(meeting.date);
       const hijriDate = getHijriDisplay(meeting.date);
-      const dayName = getDayName(meeting.date);
 
       let text = `━━━━━━━━━━━━━━━━\n`;
       text += `📋 *اجتماع حياة الوصل ${idx + 1}*\n`;
       text += `━━━━━━━━━━━━━━━━\n`;
       text += `🏠 المستضيف: *${meeting.host}*\n`;
-      text += `📆 ${gregDate}\n📿 ${hijriDate}\n🗓 ${dayName}\n`;
+      text += `📆 ${gregDate}\n📿 ${hijriDate}\n`;
       if (meeting.isRamadan) text += `🌙 *رمضان مبارك*\n`;
       text += `━━━━━━━━━━━━━━━━\n`;
 
@@ -972,7 +967,6 @@
         meetings.forEach((m, idx) => {
           const gregDate = getGregorianDisplay(m.date);
           const hijriDate = getHijriDisplay(m.date);
-          const dayName = getDayName(m.date);
           const ramHTML = m.isRamadan ? `<span class="export-card-ramadan">رمضان</span>` : '';
 
           let tasksHTML = '';
@@ -982,22 +976,21 @@
             const emoji = t === 'سلطة' ? '🥗' : t.includes('حلى') ? '🍰' : '🍲';
             tasksHTML += `
               <div class="export-task export-task-${type}">
-                <div class="export-task-name">${p}</div>
-                <div class="export-task-label">${emoji} ${t}</div>
+                <span class="export-task-name">${p}</span>
+                <span class="export-task-label">${emoji} ${t}</span>
               </div>`;
           });
 
           html += `
             <div class="export-card">
               <div class="export-card-head">
-                <span class="export-meeting-number">الاجتماع ${idx + 1}</span>
-                <span class="export-head-sep" aria-hidden="true"></span>
                 <span class="export-host"><i class="fas fa-home" aria-hidden="true" style="font-size:12px;"></i>${m.host}</span>
+                <span class="export-head-sep" aria-hidden="true"></span>
+                <span class="export-meeting-number">الاجتماع ${idx + 1}</span>
               </div>
               <div class="export-card-dates">
                 <span>${gregDate}</span>
                 <span>${hijriDate}</span>
-                <span>${dayName}</span>
                 ${ramHTML}
               </div>
               <div class="export-tasks">${tasksHTML}</div>
